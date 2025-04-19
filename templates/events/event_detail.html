@@ -27,7 +27,7 @@
         
         {% if is_author %}
         <div class="flex space-x-2">
-          <a href="#" class="text-gray-600 hover:text-gray-900 text-sm font-medium">
+          <a href="{% url 'edit_event' event_id=event.id %}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">
             Edit Event
           </a>
         </div>

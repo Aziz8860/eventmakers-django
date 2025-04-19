@@ -87,6 +87,36 @@ class CreateEventView(View):
         
         return render(request, 'events/create_event.html', {'form': form})
 
+class EditEventView(View):
+    @method_decorator(login_required)
+    def get(self, request, event_id):
+        event = get_object_or_404(Event, id=event_id, isDeleted=False)
+        
+        # Check if the user is the author of the event
+        if str(request.user.id) != event.authorId:
+            messages.error(request, 'You do not have permission to edit this event')
+            return redirect('event_detail', event_id=event.id)
+        
+        form = EventForm(instance=event)
+        return render(request, 'events/edit_event.html', {'form': form, 'event': event})
+    
+    @method_decorator(login_required)
+    def post(self, request, event_id):
+        event = get_object_or_404(Event, id=event_id, isDeleted=False)
+        
+        # Check if the user is the author of the event
+        if str(request.user.id) != event.authorId:
+            messages.error(request, 'You do not have permission to edit this event')
+            return redirect('event_detail', event_id=event.id)
+        
+        form = EventForm(request.POST, instance=event)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Event updated successfully!')
+            return redirect('event_detail', event_id=event.id)
+        
+        return render(request, 'events/edit_event.html', {'form': form, 'event': event})
+
 class EventDetailView(View):
     def get(self, request, event_id):
         event = get_object_or_404(Event, id=event_id, isDeleted=False)
