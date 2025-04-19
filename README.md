@@ -1,5 +1,8 @@
 # EventMakers Django
 
+![hompage preview](https://github.com/user-attachments/assets/a095806d-ed33-4e76-bca4-78c9baf21503)
+
+
 ## Project Description
 
 **EventMakers** is a Django-based web application designed for efficient event management and participant registration. The app provides a modern, responsive interface for creating, editing, and viewing events, as well as registering participants with unique email validation for each event.
