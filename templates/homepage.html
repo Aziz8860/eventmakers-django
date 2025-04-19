@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %} Homepage {% endblock %}
+
+{% block content %}
+<div class="py-6">
+  <h1 class="text-3xl font-bold text-center mb-2">Explore Events</h1>
+  <p class="text-center text-gray-600 mb-8">Explore popular events near you, browse by category, or check out some of the great community calendars.</p>
+
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold mb-4">Popular Events</h2>
+    
+    {% if events %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for event in events %}
+      <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+        {% if event.image %}
+        <img src="{{ event.image }}" alt="{{ event.name }}" class="w-full h-48 object-cover">
+        {% else %}
+        <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+          <span class="text-gray-400">No image available</span>
+        </div>
+        {% endif %}
+        <div class="p-4">
+          <h3 class="font-bold text-lg mb-2">{{ event.name }}</h3>
+          <p class="text-gray-600 text-sm mb-2">{{ event.eventDate }}</p>
+          <p class="text-gray-600 mb-4 line-clamp-2">{{ event.description }}</p>
+          <a href="{% url 'event_detail' event_id=event.id %}" class="inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium">View Details</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-12 bg-white rounded-lg shadow">
+      <h3 class="text-xl font-medium text-gray-500">No events available</h3>
+      <p class="mt-2 text-gray-400">Be the first to create an event!</p>
+      {% if user.is_authenticated %}
+      <a href="{% url 'create_event' %}" class="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium">Create Event</a>
+      {% else %}
+      <a href="{% url 'login' %}" class="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium">Sign in to Create Event</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

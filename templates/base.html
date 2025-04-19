@@ -5,9 +5,65 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %} Eventmakers Django {% endblock %}</title>
-    <link href="{{ static 'static/output.css' }}" rel="stylesheet" />
+    <link href="{% static 'output.css' %}" rel="stylesheet" />
   </head>
-  <body>
-    {% block content %} {% endblock %}
+  <body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex">
+            <div class="flex-shrink-0 flex items-center">
+              <a href="{% url 'homepage' %}" class="text-xl font-semibold text-gray-800">eventmakers, but Django</a>
+            </div>
+          </div>
+          <div class="flex items-center">
+            {% if user.is_authenticated %}
+              <a href="{% url 'create_event' %}" class="mr-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                Host Event
+              </a>
+              <div class="relative inline-block text-left">
+                <div>
+                  <span class="mr-2">Hello, {{ user.username }}</span>
+                  <a href="{% url 'logout' %}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">
+                    Sign out
+                  </a>
+                </div>
+              </div>
+            {% else %}
+              <a href="{% url 'login' %}" class="mr-2 text-gray-600 hover:text-gray-900 text-sm font-medium">
+                Sign in
+              </a>
+              <a href="{% url 'register' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                Sign up
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        {% for message in messages %}
+          <div class="{% if message.tags == 'error' %}bg-red-100 border-red-400 text-red-700{% else %}bg-green-100 border-green-400 text-green-700{% endif %} px-4 py-3 rounded relative mb-4" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      {% block content %} {% endblock %}
+    </main>
+
+    <footer class="bg-white mt-12 py-6 border-t">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <p class="text-center text-gray-500 text-sm">
+          &copy; 2025 Eventmakers. All rights reserved.
+        </p>
+      </div>
+    </footer>
   </body>
 </html>
