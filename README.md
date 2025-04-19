@@ -12,6 +12,11 @@ django-admin startproject core .
 python ./manage.py startapp notes
 ```
 
+```
+python ./manage.py run_huey
+python ./manage.py run_huey --workers 4
+```
+
 Setelah bikin app:
 
 1. Start from view

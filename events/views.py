@@ -7,7 +7,6 @@ from django.contrib import messages
 from django.views.generic import View
 from .models import Event, Participant
 from .forms import EventForm, ParticipantForm, UserRegisterForm, UserLoginForm
-from datetime import datetime
 
 class RegisterView(View):
     def get(self, request):
@@ -79,11 +78,26 @@ class CreateEventView(View):
     def post(self, request):
         form = EventForm(request.POST)
         if form.is_valid():
-            event = form.save(commit=False)
-            event.authorId = request.user.id
-            event.save()
-            messages.success(request, 'Event created successfully!')
-            return redirect('event_detail', event_id=event.id)
+            # Instead of saving directly, prepare data for the task
+            form_data = {
+                'name': form.cleaned_data['name'],
+                'description': form.cleaned_data['description'],
+                'eventDate': form.cleaned_data['eventDate'],
+                'category': form.cleaned_data.get('category', ''),
+                'image': form.cleaned_data.get('image', '')
+            }
+            
+            # Import here to avoid circular imports
+            from .tasks import create_event_task
+            
+            # Queue the task asynchronously
+            # The request_id is just a unique identifier for this request
+            result = create_event_task(form_data, request.user.id, str(request.user.id))
+            
+            messages.success(request, 'Event creation in progress...')
+            
+            # Redirect to homepage while the event is being created
+            return redirect('homepage')
         
         return render(request, 'events/create_event.html', {'form': form})
 
@@ -111,9 +125,23 @@ class EditEventView(View):
         
         form = EventForm(request.POST, instance=event)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Event updated successfully!')
-            return redirect('event_detail', event_id=event.id)
+            # Instead of saving directly, prepare data for the task
+            form_data = {
+                'name': form.cleaned_data['name'],
+                'description': form.cleaned_data['description'],
+                'eventDate': form.cleaned_data['eventDate'],
+                'category': form.cleaned_data.get('category', ''),
+                'image': form.cleaned_data.get('image', '')
+            }
+            
+            # Import here to avoid circular imports
+            from .tasks import update_event_task
+            
+            # Queue the task asynchronously
+            result = update_event_task(event_id, form_data, str(request.user.id))
+            
+            messages.success(request, 'Event update in progress...')
+            return redirect('homepage')
         
         return render(request, 'events/edit_event.html', {'form': form, 'event': event})
 
